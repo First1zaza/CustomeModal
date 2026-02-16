@@ -5,7 +5,13 @@ Custom modal component for Next.js only. Focused on rendering any React children
 ## Install
 
 ```bash
-# local file import
+npm install @firstzxd/custome-modal
+```
+
+Or with yarn/pnpm:
+```bash
+yarn add @firstzxd/custome-modal
+pnpm add @firstzxd/custome-modal
 ```
 
 ## QuickStart
