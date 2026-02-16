@@ -1,5 +1,5 @@
 {
-  "name": "custom-modal",
+  "name": "@custome/modal",
   "version": "1.0.0",
   "description": "Custom modal component for Next.js hook and fully custom children.",
   "type": "module",
