@@ -8,7 +8,9 @@ Custom modal component for Next.js only. Focused on rendering any React children
 # local file import
 ```
 
-## Quick Usage (SweetAlert-style)
+## QuickStart
+
+### Option 1
 
 ```tsx
 "use client";
@@ -35,7 +37,7 @@ export default function Example() {
 }
 ```
 
-## Quick Usage (Controlled)
+### Option 2
 
 ```tsx
 "use client";
@@ -53,6 +55,43 @@ export default function Example() {
       <Modal open={open} onClose={() => setOpen(false)}>
         <div className="p-6">Custom body content</div>
       </Modal>
+    </div>
+  );
+}
+```
+
+### Multiple Modals
+
+```tsx
+"use client";
+
+import { useModal } from "custom-modal/react";
+
+export default function Example() {
+  const confirmModal = useModal();
+  const detailModal = useModal();
+
+  return (
+    <div className="space-y-3">
+      <button onClick={confirmModal.openModal}>Open confirm</button>
+      <button onClick={detailModal.openModal}>Open detail</button>
+
+      <confirmModal.Modal className="p-6 w-[480px]">
+        <h2>Confirm delete</h2>
+        <p>Are you sure?</p>
+        <div className="mt-4 flex gap-2 justify-end">
+          <button onClick={confirmModal.closeModal}>Cancel</button>
+          <button onClick={confirmModal.closeModal}>Delete</button>
+        </div>
+      </confirmModal.Modal>
+
+      <detailModal.Modal className="p-6 w-[520px]">
+        <h2>Order detail</h2>
+        <p>Any custom content here</p>
+        <div className="mt-4 flex justify-end">
+          <button onClick={detailModal.closeModal}>Close</button>
+        </div>
+      </detailModal.Modal>
     </div>
   );
 }
