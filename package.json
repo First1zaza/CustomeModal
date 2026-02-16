@@ -1,0 +1,27 @@
+{
+  "name": "custom-modal",
+  "version": "1.0.0",
+  "description": "Custom modal component for Next.js hook and fully custom children.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./react": {
+      "types": "./src/react-modal.d.ts",
+      "default": "./src/react-modal.js"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "modal",
+    "nextjs",
+    "react",
+    "dialog"
+  ]
+}
