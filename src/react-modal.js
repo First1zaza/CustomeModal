@@ -13,7 +13,17 @@ const JUSTIFY_MAP = {
     bottom: "flex-end"
 };
 
-// Global scroll lock counter to prevent multiple modals from interfering
+const WIDTH_MAP = {
+    sm: "300px",
+    md: "500px",
+    lg: "720px",
+    xl: "960px",
+    "2xl": "1140px",
+    "3xl": "1280px",
+    "4xl": "1440px",
+    "5xl": "1600px"
+};
+
 let scrollLockCount = 0;
 
 function enableScrollLock() {
@@ -22,7 +32,7 @@ function enableScrollLock() {
         document.body.dataset.scrollLockPrev = prevOverflow || "auto";
         document.body.style.overflow = "hidden";
     }
-     scrollLockCount++;
+    scrollLockCount += 1;
 }
 
 function disableScrollLock() {
@@ -38,20 +48,15 @@ function Portal({ children, selector = "body" }) {
     const container = useMemo(() => document.createElement("div"), []);
 
     useEffect(() => {
-        let validatedSelector = "body";
+        let host = document.body;
         if (typeof selector === "string" && selector.length > 0) {
-            const isValid = /^[a-zA-Z0-9\-#\.:\[\]="'\s]+$/.test(selector);
-            if (isValid) {
-                try {
-                    document.querySelector(selector);
-                    validatedSelector = selector;
-                } catch (e) {
-                    console.warn("Invalid portal selector:", selector);
-                }
+            try {
+                host = document.querySelector(selector) ?? document.body;
+            } catch {
+                host = document.body;
             }
         }
 
-        const host = document.querySelector(validatedSelector) ?? document.body;
         host.appendChild(container);
 
         return () => {
@@ -65,51 +70,45 @@ function Portal({ children, selector = "body" }) {
 }
 
 export function Modal({
-        open,
-        onClose,
-        children,
-        lockScroll = true,
-        closeOnEsc = true,
-        dismissOnBackdrop = true,
-        align = "center",
-        justify = "center",
-        containerStyle = {},
-        overlayStyle = {},
-        style = {},
-        containerClassName = "",
-        overlayClassName = "",
-        className = "",
-        portalSelector = "body"
-    } = {}) {
+    children,
+    dismissOnBackdrop = true,
+    align = "center",
+    justify = "center",
+    width = "lg",
+    _open = false,
+    _onClose,
+    _lockScroll = true,
+    _closeOnEsc = true
+} = {}) {
     const dialogRef = useRef(null);
 
     useEffect(() => {
-        if (!open || !lockScroll) {
+        if (!_open || !_lockScroll) {
             return undefined;
         }
 
         enableScrollLock();
         return () => disableScrollLock();
-    }, [open, lockScroll]);
+    }, [_open, _lockScroll]);
 
     useEffect(() => {
-        if (!open || !closeOnEsc) {
+        if (!_open || !_closeOnEsc) {
             return undefined;
         }
 
         function onKey(event) {
             if (event.key === "Escape") {
-                onClose?.();
+                _onClose?.();
             }
         }
 
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
-    }, [open, closeOnEsc, onClose]);
+    }, [_open, _closeOnEsc, _onClose]);
 
     useEffect(() => {
-        if (!open) {
-            return;
+        if (!_open) {
+            return undefined;
         }
 
         const timer = setTimeout(() => {
@@ -126,11 +125,15 @@ export function Modal({
         }, 0);
 
         return () => clearTimeout(timer);
-    }, [open]);
+    }, [_open]);
 
-    // Ensure critical styles cannot be overridden
+    if (!_open) {
+        return null;
+    }
+
     const alignItems = ALIGN_MAP[align] || "center";
     const justifyContent = JUSTIFY_MAP[justify] || "center";
+    const widthValue = typeof width === "number" ? `${width}px` : (WIDTH_MAP[width] || width);
 
     const safeContainerStyle = {
         position: "fixed",
@@ -139,10 +142,13 @@ export function Modal({
         display: "flex",
         alignItems,
         justifyContent,
-        padding: "12px",
-        ...containerStyle,
-        // Prevent override of critical properties
-        pointerEvents: "auto"
+        padding: "12px"
+    };
+
+    const safeOverlayStyle = {
+        position: "absolute",
+        inset: 0,
+        background: "rgba(0, 0, 0, 0.5)"
     };
 
     const safeDialogStyle = {
@@ -151,34 +157,25 @@ export function Modal({
         background: "#ffffff",
         borderRadius: "12px",
         boxShadow: "0 20px 60px rgba(0, 0, 0, 0.2)",
+        width: widthValue || "720px",
         maxWidth: "92vw",
-        ...style,
-        // Prevent display hidden
-        display: style?.display === "none" ? "flex" : "flex"
+        maxHeight: "85vh",
+        overflow: "auto"
     };
-
-    if (!open) {
-        return null;
-    }
 
     return React.createElement(
         Portal,
-        { selector: portalSelector },
+        { selector: "body" },
         React.createElement(
             "div",
             {
-                className: containerClassName,
+                className: "",
                 style: safeContainerStyle
             },
             React.createElement("div", {
-                className: overlayClassName,
-                style: {
-                position: "absolute",
-                inset: 0,
-                background: "rgba(0, 0, 0, 0.5)",
-                ...overlayStyle
-                },
-                onClick: () => dismissOnBackdrop && onClose?.()
+                className: "",
+                style: safeOverlayStyle,
+                onClick: () => dismissOnBackdrop && _onClose?.()
             }),
             React.createElement(
                 "div",
@@ -187,7 +184,7 @@ export function Modal({
                     role: "dialog",
                     "aria-modal": "true",
                     tabIndex: -1,
-                    className,
+                    className: "",
                     style: safeDialogStyle,
                     onClick: (event) => event.stopPropagation()
                 },
@@ -209,34 +206,33 @@ export function useModal(options = {}) {
         options
     });
 
-    useEffect(() => {
-        stateRef.current = {
-            open,
-            closeModal,
-            options
-        };
-    }, [open, closeModal, options]);
+    stateRef.current = {
+        open,
+        closeModal,
+        options
+    };
 
-    const ModalSlot = useMemo(() => {
-        function BoundModal(props) {
+    const modalSlotRef = useRef(null);
+    if (!modalSlotRef.current) {
+        modalSlotRef.current = function ModalSlot(props) {
             const current = stateRef.current;
             return React.createElement(Modal, {
-                open: current.open,
-                onClose: current.closeModal,
+                _open: current.open,
+                _onClose: current.closeModal,
+                _lockScroll: true,
+                _closeOnEsc: true,
                 ...current.options,
                 ...props
             });
-        }
-
-        BoundModal.displayName = "ModalSlot";
-        return BoundModal;
-    }, []);
+        };
+        modalSlotRef.current.displayName = "ModalSlot";
+    }
 
     return {
         open,
         setOpen,
         openModal,
         closeModal,
-        Modal: ModalSlot
+        Modal: modalSlotRef.current
     };
 }
