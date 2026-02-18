@@ -203,14 +203,34 @@ export function useModal(options = {}) {
     const openModal = () => setOpen(true);
     const closeModal = () => setOpen(false);
 
-    function ModalSlot(props) {
-        return React.createElement(Modal, {
+    const stateRef = useRef({
+        open,
+        closeModal,
+        options
+    });
+
+    useEffect(() => {
+        stateRef.current = {
             open,
-            onClose: closeModal,
-            ...options,
-            ...props
-        });
-    }
+            closeModal,
+            options
+        };
+    }, [open, closeModal, options]);
+
+    const ModalSlot = useMemo(() => {
+        function BoundModal(props) {
+            const current = stateRef.current;
+            return React.createElement(Modal, {
+                open: current.open,
+                onClose: current.closeModal,
+                ...current.options,
+                ...props
+            });
+        }
+
+        BoundModal.displayName = "ModalSlot";
+        return BoundModal;
+    }, []);
 
     return {
         open,
