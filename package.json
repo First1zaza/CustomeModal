@@ -1,7 +1,7 @@
 {
     "name": "@firstzxd/custome-modal",
     "version": "1.0.5",
-    "description": "Custom modal component for Next.js hook and fully custom children.",
+    "description": "Custom modal component for react",
     "type": "module",
     "main": "./src/index.js",
     "types": "./src/index.d.ts",
