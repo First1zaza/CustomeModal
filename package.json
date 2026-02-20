@@ -1,6 +1,6 @@
 {
-    "name": "@firstzxd/custome-modal",
-    "version": "1.0.9",
+    "name": "custome-modal",
+    "version": "1.0.10",
     "description": "Custom modal component for react",
     "type": "module",
     "main": "./src/index.js",
@@ -20,7 +20,6 @@
         "@firstzxd:registry": "https://npm.pkg.github.com"
     },
     "repository": {
-        "type": "git",
         "url": "https://github.com/First1zaza/CustomeModal.git"
     },
     "files": [
