@@ -15,6 +15,9 @@
             "default": "./src/react-modal.js"
         }
     },
+    "publishConfig": {
+        "@firstzxd:registry": "https://npm.pkg.github.com"
+    },
     "files": [
         "src"
     ],
