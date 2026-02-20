@@ -86,7 +86,6 @@ export function Modal({
         if (!_open || !_lockScroll) {
             return undefined;
         }
-
         enableScrollLock();
         return () => disableScrollLock();
     }, [_open, _lockScroll]);
