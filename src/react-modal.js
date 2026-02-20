@@ -106,26 +106,6 @@ export function Modal({
         return () => document.removeEventListener("keydown", onKey);
     }, [_open, _closeOnEsc, _onClose]);
 
-    useEffect(() => {
-        if (!_open) {
-            return undefined;
-        }
-
-        const timer = setTimeout(() => {
-            if (!dialogRef.current) return;
-
-            const focusable = dialogRef.current.querySelector(
-                "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-            );
-            if (focusable) {
-                focusable.focus();
-            } else {
-                dialogRef.current.focus();
-            }
-        }, 0);
-
-        return () => clearTimeout(timer);
-    }, [_open]);
 
     if (!_open) {
         return null;
@@ -183,7 +163,6 @@ export function Modal({
                     ref: dialogRef,
                     role: "dialog",
                     "aria-modal": "true",
-                    tabIndex: -1,
                     className: "",
                     style: safeDialogStyle,
                     onClick: (event) => event.stopPropagation()
