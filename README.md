@@ -90,7 +90,6 @@ export default function Example() {
 
 - `openModal()` - open the modal.
 - `closeModal()` - close the modal.
-- `setOpen(value: boolean)` - set open state directly.
 
 ## Notes
 
