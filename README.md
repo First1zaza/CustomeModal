@@ -5,13 +5,13 @@ Lightweight modal component for React. Focused on rendering any React children, 
 ## Install
 
 ```bash
-npm install @firstzxd/custome-modal
+npm install custome-modal
 ```
 
 Or with yarn/pnpm:
 ```bash
-yarn add @firstzxd/custome-modal
-pnpm add @firstzxd/custome-modal
+yarn add custome-modal
+pnpm add custome-modal
 ```
 
 ## QuickStart
@@ -19,7 +19,7 @@ pnpm add @firstzxd/custome-modal
 ```tsx
 "use client";
 
-import { useModal } from "@firstzxd/custome-modal/react";
+import { useModal } from "custome-modal/react";
 
 export default function Example() {
   const { openModal, closeModal, Modal } = useModal();
@@ -46,7 +46,7 @@ export default function Example() {
 ```tsx
 "use client";
 
-import { useModal } from "@firstzxd/custome-modal/react";
+import { useModal } from "custome-modal/react";
 
 export default function Example() {
   const confirmModal = useModal();

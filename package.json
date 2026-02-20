@@ -1,5 +1,5 @@
 {
-    "name": "@firstzxd/custome-modal",
+    "name": "custome-modal",
     "version": "1.0.6",
     "description": "Custom modal component for react",
     "type": "module",
