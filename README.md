@@ -1,6 +1,6 @@
 # Custom Modal
 
-Lightweight modal component for React. Focused on rendering any React children, with simple API and optional imperative control.
+Lightweight modal component for React. Make you own modal component with your favorite css framework or style (TailwindCSS) or without any framework.
 
 ## Install
 

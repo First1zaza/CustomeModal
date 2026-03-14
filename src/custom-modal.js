@@ -3,73 +3,48 @@ const template = document.createElement("template");
 template.innerHTML = `
   <style>
     :host {
-      --cm-overlay-bg: rgba(0, 0, 0, 0.55);
-      --cm-bg: #ffffff;
-      --cm-text: #1a1a1a;
-      --cm-radius: 16px;
+      --cm-overlay-bg: rgba(0, 0, 0, 0.5);
       --cm-width: 720px;
       --cm-max-width: 92vw;
-      --cm-max-height: 85vh;
-      --cm-padding: 12px;
-      --cm-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
-      --cm-z-index: 1000;
-      --cm-anim-duration: 180ms;
+      --cm-max-height: 90vh;
       --cm-align-items: center;
       --cm-justify-content: center;
+      --cm-z-index: 1000;
 
       display: none;
       position: fixed;
       inset: 0;
       z-index: var(--cm-z-index);
       font: inherit;
-      color: var(--cm-text);
     }
 
     :host([open]) {
-      display: block;
+      display: flex;
+      align-items: var(--cm-align-items);
+      justify-content: var(--cm-justify-content);
+      padding: 12px;
     }
 
     .overlay {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: var(--cm-align-items);
-      justify-content: var(--cm-justify-content);
-      padding: var(--cm-padding);
       background: var(--cm-overlay-bg);
-      opacity: 0;
-      transition: opacity var(--cm-anim-duration) ease;
-    }
-
-    :host([open]) .overlay {
-      opacity: 1;
     }
 
     .dialog {
       position: relative;
+      z-index: 1;
       width: var(--cm-width);
       max-width: var(--cm-max-width);
       max-height: var(--cm-max-height);
       overflow: auto;
-      background: var(--cm-bg);
-      border-radius: var(--cm-radius);
-      box-shadow: var(--cm-shadow);
-      transform: translateY(10px) scale(0.98);
-      opacity: 0;
-      transition: transform var(--cm-anim-duration) ease, opacity var(--cm-anim-duration) ease;
       outline: none;
-    }
-
-    :host([open]) .dialog {
-      transform: translateY(0) scale(1);
-      opacity: 1;
     }
   </style>
 
-  <div class="overlay" part="overlay">
-    <div class="dialog" part="dialog" role="dialog" aria-modal="true" tabindex="-1">
-      <slot></slot>
-    </div>
+  <div class="overlay" part="overlay"></div>
+  <div class="dialog" part="dialog" role="dialog" aria-modal="true" tabindex="-1">
+    <slot></slot>
   </div>
 `;
 
@@ -87,6 +62,7 @@ class CustomModal extends HTMLElement {
     this._dialogEl = this.shadowRoot.querySelector(".dialog");
 
     this._handleOverlayClick = this._handleOverlayClick.bind(this);
+    this._handleKeyDown = this._handleKeyDown.bind(this);
   }
 
   connectedCallback() {
@@ -102,15 +78,16 @@ class CustomModal extends HTMLElement {
 
   disconnectedCallback() {
     this._overlayEl.removeEventListener("click", this._handleOverlayClick);
+    if (this._hasScrollLock) {
+      this._releaseScrollLock();
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue === newValue) {
-      return;
-    }
+    if (oldValue === newValue) return;
 
     if (name === "open") {
-      if (this.open) {
+      if (this.hasAttribute("open")) {
         this._onOpen();
       } else {
         this._onClose();
@@ -168,17 +145,46 @@ class CustomModal extends HTMLElement {
     return attr !== null && attr.toLowerCase() === "false";
   }
 
-  _handleOverlayClick(event) {
-    if (event.target !== this._overlayEl) {
-      return;
-    }
+  _handleOverlayClick() {
     if (this.dismissOnBackdrop) {
       this.closeModal();
     }
   }
 
+  _handleKeyDown(event) {
+    if (event.key === "Escape" && this.open) {
+      this.closeModal();
+    }
+  }
+
+  _acquireScrollLock() {
+    if (window._cmScrollLocks === undefined) {
+      window._cmScrollLocks = 0;
+    }
+    if (window._cmScrollLocks === 0) {
+      window._cmPrevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
+    window._cmScrollLocks++;
+    this._hasScrollLock = true;
+  }
+
+  _releaseScrollLock() {
+    if (!this._hasScrollLock) return;
+    
+    window._cmScrollLocks--;
+    this._hasScrollLock = false;
+    
+    if (window._cmScrollLocks === 0 && window._cmPrevOverflow !== undefined) {
+      document.body.style.overflow = window._cmPrevOverflow;
+    }
+  }
+
   _onOpen() {
     this._lastActive = document.activeElement;
+    document.addEventListener("keydown", this._handleKeyDown);
+    this._acquireScrollLock();
+    
     this.dispatchEvent(new CustomEvent("modal-opened", { bubbles: true }));
 
     window.requestAnimationFrame(() => {
@@ -187,6 +193,9 @@ class CustomModal extends HTMLElement {
   }
 
   _onClose() {
+    document.removeEventListener("keydown", this._handleKeyDown);
+    this._releaseScrollLock();
+    
     this.dispatchEvent(new CustomEvent("modal-closed", { bubbles: true }));
 
     if (this._lastActive && typeof this._lastActive.focus === "function") {
@@ -199,43 +208,18 @@ class CustomModal extends HTMLElement {
     const justify = (this.getAttribute("justify") || "center").toLowerCase();
     const width = (this.getAttribute("width") || "lg").toLowerCase();
 
-    const alignMap = {
-      left: "flex-start",
-      center: "center",
-      right: "flex-end"
-    };
-
-    const justifyMap = {
-      top: "flex-start",
-      center: "center",
-      bottom: "flex-end"
-    };
-
+    const alignMap = { left: "flex-start", center: "center", right: "flex-end" };
+    const justifyMap = { top: "flex-start", center: "center", bottom: "flex-end" };
     const widthMap = {
-      sm: "300px",
-      md: "500px",
-      lg: "720px",
-      xl: "960px",
-      "2xl": "1140px",
-      "3xl": "1280px",
-      "4xl": "1440px",
-      "5xl": "1600px"
+      sm: "300px", md: "500px", lg: "720px", xl: "960px",
+      "2xl": "1140px", "3xl": "1280px", "4xl": "1440px", "5xl": "1600px"
     };
 
-    const widthValue = widthMap[width] || width;
+    const widthValue = widthMap[width] || width || "720px";
+    
     this.style.setProperty("--cm-align-items", alignMap[align] || "center");
     this.style.setProperty("--cm-justify-content", justifyMap[justify] || "center");
-    this.style.setProperty("--cm-width", this._formatWidth(widthValue));
-  }
-
-  _formatWidth(value) {
-    if (!value) {
-      return "720px";
-    }
-    if (/^\d+$/.test(value)) {
-      return `${value}px`;
-    }
-    return value;
+    this.style.setProperty("--cm-width", /^\d+$/.test(widthValue) ? `${widthValue}px` : widthValue);
   }
 }
 

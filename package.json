@@ -12,8 +12,8 @@
             "default": "./src/index.js"
         },
         "./react": {
-            "types": "./src/react-modal.d.ts",
-            "default": "./src/react-modal.js"
+            "types": "./src/react/modal.d.ts",
+            "default": "./src/react/modal.js"
         }
     },
     "publishConfig": {
