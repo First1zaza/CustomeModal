@@ -85,7 +85,7 @@ export default function Example() {
 - `dismissOnBackdrop` (boolean) - click backdrop to close. Default: `true`.
 - `align` (`left` | `center` | `right`) - horizontal alignment inside viewport. Default: `center`.
 - `justify` (`top` | `center` | `bottom`) - vertical alignment inside viewport. Default: `center`.
-- `width` (`sm` | `md` | `lg` | `xl` | `2xl` | `3xl` | `4xl` | `5xl` | number ) - modal width. Default: `lg` .
+- `width` (`sm` | `md` | `lg` | `xl` | `2xl` | `3xl` | `4xl` | `5xl` | number | string) - modal width (numbers are treated as pixels). Default: `lg`.
 
 ## Methods (from useModal)
 
