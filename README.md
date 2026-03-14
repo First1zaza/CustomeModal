@@ -1,5 +1,5 @@
 
-<p align="center"><img width="180px" src="https://m1r.ai/lw5TU.png" /></p>
+<p align="center"><img width="180px" src="https://m1r.ai/BtfZK.png" /></p>
 <h3 align="center">Custome Modal</h3>
 <p align="center">Custome modal component for React. <br/>Make you own modal component with your favorite css framework (TailwindCSS) or style.</p>
   
@@ -85,7 +85,7 @@ export default function Example() {
 - `dismissOnBackdrop` (boolean) - click backdrop to close. Default: `true`.
 - `align` (`left` | `center` | `right`) - horizontal alignment inside viewport. Default: `center`.
 - `justify` (`top` | `center` | `bottom`) - vertical alignment inside viewport. Default: `center`.
-- `width` (`sm` | `md` | `lg` | `xl` | `2xl` | `3xl` | `4xl` | `5xl` | number | string) - modal width. Default: `lg`.
+- `width` (`sm` | `md` | `lg` | `xl` | `2xl` | `3xl` | `4xl` | `5xl` | number ) - modal width. Default: `lg` .
 
 ## Methods (from useModal)
 
