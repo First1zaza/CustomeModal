@@ -1,7 +1,7 @@
 
 <p align="center"><img width="180px" src="https://m1r.ai/lw5TU.png" /></p>
 <h3 align="center">Custome Modal</h3>
-<p align="center">Custome modal component for React. <br/>Make you own modal component with your favorite css framework or style (TailwindCSS) or without any framework.</p>
+<p align="center">Custome modal component for React. <br/>Make you own modal component with your favorite css framework (TailwindCSS) or style.</p>
   
 ## Install
 
