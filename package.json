@@ -1,11 +1,13 @@
 {
     "name": "custome-modal",
     "version": "1.0.12",
-    "description": "Custom modal component for react",
+    "description": "Custome modal component for React. Make you own modal component with your favorite css framework (TailwindCSS) or style.",
     "type": "module",
     "main": "./src/index.js",
     "types": "./src/index.d.ts",
     "license": "MIT",
+    "author": "First1zaza",
+    "homepage": "https://github.com/First1zaza/CustomeModal#readme",
     "exports": {
         ".": {
             "types": "./src/index.d.ts",
@@ -20,15 +22,28 @@
         "registry": "https://registry.npmjs.org"
     },
     "repository": {
+        "type": "git",
         "url": "https://github.com/First1zaza/CustomeModal.git"
     },
+    "bugs": {
+        "url": "https://github.com/First1zaza/CustomeModal/issues"
+    },
     "files": [
-        "src"
+        "src",
+        "README.md",
+        "LICENSE"
     ],
     "keywords": [
         "modal",
         "nextjs",
         "react",
-        "dialog"
-    ]
+        "dialog",
+        "popup",
+        "custom-modal",
+        "react-component"
+    ],
+    "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0"
+    }
 }
